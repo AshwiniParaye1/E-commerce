@@ -1,4 +1,6 @@
 const Product = require("../models/Product");
+const Slider = require("../models/Slider");
+
 const {
   verifyToken,
   verifyTokenAndAuthorization,
@@ -19,6 +21,55 @@ router.post("/", verifyTokenAndAdmin, async (req, res) => {
     res.status(500).json(err);
   }
 });
+
+// SLIDER CREATE
+router.post("/slider/create", verifyTokenAndAdmin, async (req, res) => {
+  const newSlider = new Slider(req.body);
+  try {
+    const savedProduct = await newSlider.save();
+    res.status(200).json(savedProduct);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+//SLIDER DELETE
+router.delete("/slider/delete/:id", verifyTokenAndAdmin, async (req, res) => {
+  try {
+    let deletedProduct = await Slider.findByIdAndDelete(req.params.id);
+    res.status(200).json("Slider has been deleted...");
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+// SLIDER GET
+router.get("/slider/", async (req, res) => {
+  try {
+    const SliderList = await Slider.find();
+    res.status(200).json(SliderList);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+//UPDATE
+router.put("slider/update/:id", verifyTokenAndAdmin, async (req, res) => {
+  try {
+    const updatedProduct = await Slider.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: req.body,
+      },
+      { new: true }
+    );
+    res.status(200).json(updatedProduct);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+
 
 //UPDATE
 router.put("/:id", verifyTokenAndAdmin, async (req, res) => {
