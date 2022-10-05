@@ -29,20 +29,23 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ username: req.body.username });
-    !user && res.status(401).json("Wrong credentials!");
+    // !user && res.status(401).json("Wrong credentials!");
+    if (!user) {
+      res.status(401).json("Wrong credentials!");
+      return;
+    }
 
     const hashedPassword = CryptoJS.AES.decrypt(
       user.password,
       process.env.PASS_SEC
     );
     const OriginalPassword = hashedPassword.toString(CryptoJS.enc.Utf8);
-    console.log("OriginalPassword", OriginalPassword);
-    console.log("object", req.body.password);
+    // console.log("OriginalPassword", OriginalPassword);
+    // console.log("object", req.body.password);
     if (OriginalPassword !== req.body.password) {
       res.status(400).json("Wrong credentials!");
       return;
     }
-    // OriginalPassword !== req.body.password &&
 
     const accessToken = jwt.sign(
       {
